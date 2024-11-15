@@ -107,15 +107,60 @@ extract_test =extracted_code(generate_test)
 # print(extract_test)
 
 # save code and test code both in a python file 
-code_test_file=extract_code + "\n" + extract_test
+code_test_file=extract_code + "\n" +"import unittest"+"\n"+ extract_test
 with open("test_code.py", "w") as file:
     file.write(code_test_file)
     
-# run the test code
-run_result = subprocess.run(["python3", "-m", "unittest","test_code.py"], capture_output=True, text=True)
-# Print the output and any errors
-print("Output:", run_result.stdout)
-print("Errors:", run_result.stderr)
+
+code_pass=0 # number of time code did not pass and changed 
+test_pass=0 # number of time that code was good and fixed and around of test perform
+while ((test_pass < 3) and (code_pass<5)):
+    # run the test code
+    run_result = subprocess.run(["python3", "-m", "unittest","test_code.py"], capture_output=True, text=True)
+    # Print the output and any errors
+    # print("Output:", run_result.stdout)
+    # print("Errors:", run_result.stderr)
+    if "FAILED" in run_result.stderr: # check if the code did not pass the test 
+        print("the code has not pass and failed testing ")
+        #generate new code base on errors
+        codefail_descrpt='''The code {} did not pass the test code {}, and encountered the 
+        following errors: {}. Please regenerate the code with fixes to address these issues,
+        using the template introduced earlier.
+        #Template code:
+    def find_min(a, b):
+    return a if a < b else b    
+    #End of code Template
+        '''.format(extract_code,extract_test,run_result.stderr)
+        
+        generate_code = Myagent(codefail_descrpt)
+        extract_code=extracted_code(generate_code) # extract new code
+        print(extract_code)
+        test_pass=0  # because of new code generated , the test round reset
+        code_pass +=1 # add one round for code fail
+
+    newtest_descrpt='''Create a new set of test file for the code {} using the previously discussed template.
+    The test should use unittes
+    #Template code:
+    Put code here
+    if __name__ == '__main__':
+    unittest.main()
+    #End of code Template
+    '''.format(extract_code)
+    generate_test = Myagent(newtest_descrpt)
+    extract_test=extracted_code(generate_test)      
+    test_pass=test_pass+1 # add one round for test passsing
+    testcode=extract_code +"\n" +"import unittest"+"\n" +extract_test
+    with open("test_code.py", "w") as file:
+        file.write(testcode)
+
+if code_pass >= 10:
+    print("the code didnt pass the test after seveal time updates and test")
+elif test_pass>=5:
+    print("the code is correct and pass several test. the final code is:")
+    print(extract_code)        
+print("done")
+
+
 
 
 
