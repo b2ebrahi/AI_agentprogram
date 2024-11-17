@@ -2,7 +2,7 @@ import ollama
 import re
 import subprocess
 
-# Create a class for  Agent that asks job-related questions and stores all messages."
+# Create a class for  Agent that asks job-related questions from llm and stores all messages."
 class Agent:
     def __init__(self, system=""):
         self.system = system
@@ -15,7 +15,8 @@ class Agent:
         result = self.execute()
         self.messages.append({"role": "assistant", "content": result})
         return result
-# Reach the LLM to get the answer
+    
+# Reach the LLM to get the answer and return the response
     def execute(self):
         response = ollama.chat(
                         model='llama3:8b', 
@@ -25,7 +26,8 @@ class Agent:
 
 
 
-# Function to extract the code part from the LLM's answer.
+# Function to extract the code part from the LLM's answer.it get a text and then extract the code part 
+# the code part text  will be returned.
 def extracted_code(text):
     pattern = r"#Template code:\s*(.*?)\s*(#End of code Template)" 
     match = re.search(pattern, text, re.DOTALL)
@@ -69,7 +71,7 @@ Myagent = Agent(System_descrpt)
 
 
 
-## Get the description from the user.
+# Get the description from the user.
 # loopcondition = True
 # while loopcondition: 
 #     code_descrpt = input("Please enter the description of code you want to create? ")
@@ -113,7 +115,7 @@ with open("test_code.py", "w") as file:
     
 
 code_pass=0 # number of time code did not pass and changed 
-test_pass=0 # number of time that code was good and fixed and around of test perform
+test_pass=0 # number of time that code was good and fixed for test perform
 while ((test_pass < 3) and (code_pass<5)):
     # run the test code
     run_result = subprocess.run(["python3", "-m", "unittest","test_code.py"], capture_output=True, text=True)
@@ -153,9 +155,9 @@ while ((test_pass < 3) and (code_pass<5)):
     with open("test_code.py", "w") as file:
         file.write(testcode)
 
-if code_pass >= 10:
-    print("the code didnt pass the test after seveal time updates and test")
-elif test_pass>=5:
+if code_pass >= 5:
+    print("the code didn't pass the test after several time updates and test")
+elif test_pass>=3:
     print("the code is correct and pass several test. the final code is:")
     print(extract_code)        
 print("done")
