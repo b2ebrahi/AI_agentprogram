@@ -29,7 +29,7 @@ class Agent:
 # Function to extract the code part from the LLM's answer.it get a text and then extract the code part 
 # the code part text  will be returned.
 def extracted_code(text):
-    pattern = r"#Template code:\s*(.*?)\s*(#End of code Template)" 
+    pattern = r"Template code:\s*(.*?)\s*(#End of code Template)" 
     match = re.search(pattern, text, re.DOTALL)
    # Extract and display the code if the match is found
     if match:
@@ -72,16 +72,19 @@ Myagent = Agent(System_descrpt)
 
 
 # Get the description from the user.
-# loopcondition = True
-# while loopcondition: 
-#     code_descrpt = input("Please enter the description of code you want to create? ")
-   
-#     if code_descrpt:
-#         loopcondition= False
+loopcondition = True
+while loopcondition: 
+    code_descrpt = input("Please enter the description of code you want to create? ")
+    if code_descrpt:
+        loopcondition= False
 
-code_descrpt="write a code in Python that sort numbers in a list, without using builted function sorted ?"
-generate_code = Myagent(code_descrpt) # text of code generate from agent 
-# print(generate_code)
+
+
+# code_descrpt="write a code in Python that sort numbers in a list, without using builted function sorted ?"
+
+# text of code generate from agent 
+generate_code = Myagent(code_descrpt) 
+print(generate_code)
 extract_code=extracted_code(generate_code) # the exracted part related to code
 # print(extract_code)
 
@@ -123,24 +126,25 @@ while ((test_pass < 3) and (code_pass<5)):
     # print("Output:", run_result.stdout)
     # print("Errors:", run_result.stderr)
     if "FAILED" in run_result.stderr: # check if the code did not pass the test 
-        print("the code has not pass and failed testing ")
+        print("the code has not pass and failed testing, change the code and do testing again ")
         #generate new code base on errors
-        codefail_descrpt='''The code {} did not pass the test code {}, and encountered the 
-        following errors: {}. Please regenerate the code with fixes to address these issues,
-        using the template introduced earlier.
+        codefail_descrpt='''The description of the code we want to create is: {}.
+The code {} did not pass the test code {} and encountered the following errors: {}.
+Please fix the code based on the description {}, addressing these issues,
+ and follow the template introduced earlier. create the code for description in this step without test claa part
         #Template code:
     def find_min(a, b):
     return a if a < b else b    
     #End of code Template
-        '''.format(extract_code,extract_test,run_result.stderr)
+        '''.format(code_descrpt,extract_code,extract_test,run_result.stderr,code_descrpt)
         
         generate_code = Myagent(codefail_descrpt)
         extract_code=extracted_code(generate_code) # extract new code
-        print(extract_code)
+        print("Extracted code:\n", extract_code)        
         test_pass=0  # because of new code generated , the test round reset
         code_pass +=1 # add one round for code fail
 
-    newtest_descrpt='''Create a new set of test file for the code {} using the previously discussed template.
+    newtest_descrpt='''Create a  new set of test file for the code {} using the previously discussed template.
     The test should use unittes
     #Template code:
     Put code here
@@ -148,15 +152,16 @@ while ((test_pass < 3) and (code_pass<5)):
     unittest.main()
     #End of code Template
     '''.format(extract_code)
+    print("Another round of testing...")
     generate_test = Myagent(newtest_descrpt)
     extract_test=extracted_code(generate_test)      
     test_pass=test_pass+1 # add one round for test passsing
-    testcode=extract_code +"\n" +"import unittest"+"\n" +extract_test
+    testcode= "import unittest"+ extract_code +"\n"  +"\n" +extract_test
     with open("test_code.py", "w") as file:
         file.write(testcode)
 
 if code_pass >= 5:
-    print("the code didn't pass the test after several time updates and test")
+    print("\n \n the code didn't pass the test after several time updates and test")
 elif test_pass>=3:
     print("the code is correct and pass several test. the final code is:")
     print(extract_code)        
