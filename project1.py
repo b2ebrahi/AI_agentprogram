@@ -156,12 +156,12 @@ Please fix the code based on the description {}, addressing these issues,
     generate_test = Myagent(newtest_descrpt)
     extract_test=extracted_code(generate_test)      
     test_pass=test_pass+1 # add one round for test passsing
-    testcode= "import unittest"+ extract_code +"\n"  +"\n" +extract_test
+    testcode= "import unittest\n"+ extract_code  +"\n" +extract_test
     with open("test_code.py", "w") as file:
         file.write(testcode)
 
 if code_pass >= 5:
-    print("\n \n the code didn't pass the test after several time updates and test")
+    print("\n \n the code didn't pass the test after several time updates and test\n")
 elif test_pass>=3:
     print("the code is correct and pass several test. the final code is:")
     print(extract_code)        
