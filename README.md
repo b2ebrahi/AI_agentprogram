@@ -1,2 +1,3 @@
 # AI_agentprogram
-AI agent that will generate a python program from a description or set of requirements
+An AI agent that generates a Python program based on a given description or set of requirements. The agent will then undergo multiple iterations of testing and correct the code if any errors are encountered.
+
