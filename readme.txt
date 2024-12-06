@@ -1,3 +1,6 @@
+This document provides a step-by-step guide to setting up and running the AI agent powered by the Llama Large Language Model (LLM), an open-source model developed by Meta. This project uses the 3.8 billion parameter model, approximately 4.7 GB in size.
+The instructions assume the use of Linux but are also applicable to macOS and Windows with minor modifications to commands.
+
 Steps to Set Up and Run the AI Agent
 Step 1: Install Ollama
 Ollama is required to manage and run the Llama model.
